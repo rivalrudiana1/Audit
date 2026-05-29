@@ -214,12 +214,16 @@
                         Data ganda di cabang
                     </div>
                 </div>
-            @else
-                {{-- State jika belum ada data audit sama sekali di database --}}
-                <div
-                    class="bg-white border border-slate-200 rounded-xl shadow-sm p-12 flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-6">
+            {{-- Header Utama Container --}}
+            <div
+                class="px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-[#1A3A5C]/10 text-[#1A3A5C] flex items-center justify-center">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <polyline points="14 2 14 8 20 8" />
@@ -228,11 +232,202 @@
                             <polyline points="10 9 9 9 8 9" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-slate-800">Belum ada data audit</h3>
-                    <p class="text-sm text-slate-500 mt-2 max-w-sm">Silakan lakukan proses unggah data pusat dan cabang
-                        pada menu
-                        Upload File untuk memulai audit.</p>
+                    <div class="font-semibold text-slate-800 text-[13px] uppercase tracking-wide">
+                        Rincian Data Audit TPU #{{ $displayData->tpu_id }}
+                    </div>
                 </div>
+                <div
+                    class="text-[11px] text-slate-500 font-medium bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm mt-3 sm:mt-0">
+                    Terakhir diupdate: <span
+                        class="text-slate-700">{{ date('d M Y, H:i', strtotime($displayData->updated_at)) }}</span>
+                </div>
+            </div>
+
+            {{-- Grid 4 Tabel --}}
+            <div class="p-6 bg-slate-50/50">
+                <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-6">
+
+                    {{-- 1. Pandu Tidak Ada (Merah) --}}
+                    <div
+                        class="bg-white border border-red-100 rounded-xl shadow-sm flex flex-col h-[400px] overflow-hidden hover:shadow-md transition-shadow">
+                        <div
+                            class="px-4 py-3 bg-red-50/80 border-b border-red-100 flex items-center justify-between shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <svg class="text-red-500" width="15" height="15" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                </svg>
+                                <span class="font-bold text-[12.5px] text-red-800">Pandu Tdk Ada</span>
+                            </div>
+                            <span
+                                class="text-[10px] font-bold bg-white text-red-600 border border-red-200 px-2 py-0.5 rounded-full shadow-sm">
+                                {{ number_format(count($cabangTidakAda), 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse text-[12.5px]">
+                                <tbody>
+                                    @forelse ($cabangTidakAda as $item)
+                                        <tr class="hover:bg-red-50/40 transition-colors">
+                                            <td class="px-4 py-3 border-b border-slate-100 text-slate-600 font-medium truncate max-w-[1px] w-full"
+                                                title="{{ $item->dataMakam->nama }}">
+                                                {{ $item->dataMakam->nama }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="px-4 py-10 text-center text-slate-400 text-xs">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- 2. Pusat Tidak Ada (Oranye) --}}
+                    <div
+                        class="bg-white border border-orange-100 rounded-xl shadow-sm flex flex-col h-[400px] overflow-hidden hover:shadow-md transition-shadow">
+                        <div
+                            class="px-4 py-3 bg-orange-50/80 border-b border-orange-100 flex items-center justify-between shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <svg class="text-orange-500" width="15" height="15" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                                <span class="font-bold text-[12.5px] text-orange-800">Pusat Tdk Ada</span>
+                            </div>
+                            <span
+                                class="text-[10px] font-bold bg-white text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full shadow-sm">
+                                {{ number_format(count($pusatTidakAda), 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse text-[12.5px]">
+                                <tbody>
+                                    @forelse ($pusatTidakAda as $item)
+                                        <tr class="hover:bg-orange-50/40 transition-colors">
+                                            <td class="px-4 py-3 border-b border-slate-100 text-slate-600 font-medium truncate max-w-[1px] w-full"
+                                                title="{{ $item->dataMakam->nama }}">
+                                                {{ $item->dataMakam->nama }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="px-4 py-10 text-center text-slate-400 text-xs">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- 3. Tahun Beda (Kuning/Amber) --}}
+                    <div
+                        class="bg-white border border-amber-100 rounded-xl shadow-sm flex flex-col h-[400px] overflow-hidden hover:shadow-md transition-shadow">
+                        <div
+                            class="px-4 py-3 bg-amber-50/80 border-b border-amber-100 flex items-center justify-between shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <svg class="text-amber-500" width="15" height="15" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                <span class="font-bold text-[12.5px] text-amber-800">Tahun Beda</span>
+                            </div>
+                            <span
+                                class="text-[10px] font-bold bg-white text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full shadow-sm">
+                                {{ number_format(count($tahunBeda), 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse text-[12.5px]">
+                                <tbody>
+                                    @forelse ($tahunBeda as $item)
+                                        <tr class="hover:bg-amber-50/40 transition-colors">
+                                            <td class="px-4 py-3 border-b border-slate-100 text-slate-600 font-medium truncate max-w-[1px] w-full"
+                                                title="{{ $item->dataMakam->nama }}">
+                                                {{ $item->dataMakam->nama }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="px-4 py-10 text-center text-slate-400 text-xs">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- 4. Match Full (Hijau) --}}
+                    <div
+                        class="bg-white border border-green-100 rounded-xl shadow-sm flex flex-col h-[400px] overflow-hidden hover:shadow-md transition-shadow">
+                        <div
+                            class="px-4 py-3 bg-green-50/80 border-b border-green-100 flex items-center justify-between shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <svg class="text-green-500" width="15" height="15" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span class="font-bold text-[12.5px] text-green-800">Match Full</span>
+                            </div>
+                            <span
+                                class="text-[10px] font-bold bg-white text-green-600 border border-green-200 px-2 py-0.5 rounded-full shadow-sm">
+                                {{ number_format(count($matchFull), 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse text-[12.5px]">
+                                <tbody>
+                                    @forelse ($matchFull as $item)
+                                        <tr class="hover:bg-green-50/40 transition-colors">
+                                            <td class="px-4 py-3 border-b border-slate-100 text-slate-600 font-medium truncate max-w-[1px] w-full"
+                                                title="{{ $item->dataMakam->nama }}">
+                                                {{ $item->dataMakam->nama }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td class="px-4 py-10 text-center text-slate-400 text-xs">Tidak ada data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @else
+        {{-- State jika belum ada data audit sama sekali di database --}}
+        <div
+            class="bg-white border border-slate-200 rounded-xl shadow-sm p-12 flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-800">Belum ada data audit</h3>
+            <p class="text-sm text-slate-500 mt-2 max-w-sm">Silakan lakukan proses unggah data pusat dan cabang
+                pada menu
+                Upload File untuk memulai audit.</p>
+        </div>
+        </div>
+        </div>
     @endif
 
 @endsection

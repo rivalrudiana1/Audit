@@ -67,7 +67,7 @@ class AuditService
 
         $totalDuplikatPusat = 0;
         $totalDuplikatCabang = 0;
-        
+
         $auditRows = [];
         $now = now();
 
@@ -75,42 +75,60 @@ class AuditService
         foreach ($pusat as $p) {
             $idM = $normalize($p->id_match);
             if ($freqPusat[$idM] > 1) {
-                // Jika muncul > 1 kali, masukkan ke kategori Duplikat Pusat
+
                 $auditRows[] = [
-                    'audit_result_id' => 0, // Placeholder, diupdate nanti
+                    'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
                     'status'          => 'duplikat_pusat',
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
+
                 $totalDuplikatPusat++;
-            } else {
-                $pusatUnik[] = $p;
             }
+
+            /*
+|--------------------------------------------------------------------------
+| TETAP MASUK KE PROSES MATCHING
+|--------------------------------------------------------------------------
+*/
+
+            $pusatUnik[] = $p;
         }
 
         // Menyaring Data Cabang (Pandu)
         foreach ($cabang as $c) {
             $idM = $normalize($c->id_match);
             $nama = $normalize($c->nama_clean);
-            
+
             if ($freqCabang[$idM] > 1) {
-                // Jika muncul > 1 kali, masukkan ke kategori Duplikat Pandu
+
                 $auditRows[] = [
-                    'audit_result_id' => 0, 
+                    'audit_result_id' => 0,
                     'data_makam_id'   => $c->id,
                     'status'          => 'duplikat_cabang',
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
+
                 $totalDuplikatCabang++;
-            } else {
-                $cabangUnik[] = $c;
-                $cabangDictById[$idM] = $c;
-                
-                if (!isset($cabangDictByNama[$nama])) $cabangDictByNama[$nama] = [];
-                $cabangDictByNama[$nama][] = $c;
             }
+
+            /*
+|--------------------------------------------------------------------------
+| TETAP MASUK KE PROSES MATCHING
+|--------------------------------------------------------------------------
+*/
+
+            $cabangUnik[] = $c;
+
+            $cabangDictById[$idM] = $c;
+
+            if (!isset($cabangDictByNama[$nama])) {
+                $cabangDictByNama[$nama] = [];
+            }
+
+            $cabangDictByNama[$nama][] = $c;
         }
 
         /*
@@ -150,12 +168,12 @@ class AuditService
                         }
                     }
                 }
-            } 
+            }
             // Cek 2: TAHUN BEDA (id_match beda, tapi nama_clean ada)
             elseif (!empty($cabangDictByNama[$nama])) {
                 // Ambil satu data cabang yang namanya sama
                 $cMatch = array_shift($cabangDictByNama[$nama]);
-                
+
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
@@ -165,7 +183,7 @@ class AuditService
                 ];
                 $totalTahunBeda++;
                 $cabangUsedIds[$cMatch->id] = true;
-            } 
+            }
             // Cek 3: PUSAT TIDAK ADA DI CABANG
             else {
                 $auditRows[] = [

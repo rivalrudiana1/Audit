@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\AuditService;
 use App\Models\AuditResult;
 use App\Models\DataMakam;
+use App\Models\Audit;
 
 class AuditController extends Controller
 {
@@ -13,10 +14,41 @@ class AuditController extends Controller
     {
         $latestResult = AuditResult::latest()->first();
 
-        return view('audit.index', [
+        $matchFull = collect();
+        $tahunBeda = collect();
+        $pusatTidakAda = collect();
+        $cabangTidakAda = collect();
 
-            'latestResult' => $latestResult
-        ]);
+        if ($latestResult) {
+
+            $matchFull = Audit::with('dataMakam')
+                ->where('audit_result_id', $latestResult->id)
+                ->where('status', 'match_full')
+                ->get();
+
+            $tahunBeda = Audit::with('dataMakam')
+                ->where('audit_result_id', $latestResult->id)
+                ->where('status', 'tahun_beda')
+                ->get();
+
+            $pusatTidakAda = Audit::with('dataMakam')
+                ->where('audit_result_id', $latestResult->id)
+                ->where('status', 'pusat_tidak_ada')
+                ->get();
+
+            $cabangTidakAda = Audit::with('dataMakam')
+                ->where('audit_result_id', $latestResult->id)
+                ->where('status', 'cabang_tidak_ada')
+                ->get();
+        }
+
+        return view('audit.index', compact(
+            'latestResult',
+            'matchFull',
+            'tahunBeda',
+            'pusatTidakAda',
+            'cabangTidakAda'
+        ));
     }
 
     public function generate(Request $request, AuditService $auditService)
