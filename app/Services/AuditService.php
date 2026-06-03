@@ -98,6 +98,7 @@ class AuditService
 
         // Menyaring Data Cabang (Pandu)
         foreach ($cabang as $c) {
+
             $idM = $normalize($c->id_match);
             $nama = $normalize($c->nama_clean);
 
@@ -115,15 +116,21 @@ class AuditService
             }
 
             /*
-|--------------------------------------------------------------------------
-| TETAP MASUK KE PROSES MATCHING
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | TETAP MASUK KE PROSES MATCHING
+    |--------------------------------------------------------------------------
+    */
 
             $cabangUnik[] = $c;
 
-            $cabangDictById[$idM] = $c;
+            // Dictionary berdasarkan ID MATCH
+            if (!isset($cabangDictById[$idM])) {
+                $cabangDictById[$idM] = [];
+            }
 
+            $cabangDictById[$idM][] = $c;
+
+            // Dictionary berdasarkan NAMA
             if (!isset($cabangDictByNama[$nama])) {
                 $cabangDictByNama[$nama] = [];
             }
@@ -148,7 +155,12 @@ class AuditService
             $nama = $normalize($p->nama_clean);
 
             // Cek 1: MATCH FULL (id_match sama persis)
-            if (isset($cabangDictById[$idM])) {
+            if (!empty($cabangDictById[$idM])) {
+
+                $cMatch = array_shift(
+                    $cabangDictById[$idM]
+                );
+
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
@@ -156,14 +168,20 @@ class AuditService
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
-                $totalMatch++;
-                $cabangUsedIds[$cabangDictById[$idM]->id] = true;
 
-                // Hapus dari kamus nama agar tidak diklaim lagi oleh pengecekan Tahun Beda
+                $totalMatch++;
+
+                $cabangUsedIds[$cMatch->id] = true;
+
+                // Hapus dari kamus nama agar tidak diklaim lagi oleh Tahun Beda
                 if (isset($cabangDictByNama[$nama])) {
+
                     foreach ($cabangDictByNama[$nama] as $idx => $cItem) {
-                        if ($cItem->id === $cabangDictById[$idM]->id) {
+
+                        if ($cItem->id === $cMatch->id) {
+
                             unset($cabangDictByNama[$nama][$idx]);
+
                             break;
                         }
                     }
