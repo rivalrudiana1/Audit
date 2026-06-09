@@ -2,7 +2,11 @@
 
 @section('title', 'Dashboard')
 
-@section('content')
+@section('content') 
+
+<form method="POST" action="{{ route('logout') }}">
+    @csrf
+
     {{-- STATISTIC CARDS --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         {{-- Card 1 --}}

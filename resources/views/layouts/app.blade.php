@@ -103,21 +103,39 @@
                     </svg>
                     Pengaturan
                 </a>
+                <form method="POST" action="{{ route('logout') }}">
+    @csrf
 
+    <button type="submit"
+        class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] whitespace-nowrap transition-colors text-white/65 hover:bg-red-500/20 hover:text-red-300">
+
+        <svg width="16" height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+
+        Logout
+    </button>
+</form>
             </nav>
 
-            <div class="p-3 border-t border-white/10">
-                <div
-                    class="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-white/65 hover:bg-white/10 transition-colors cursor-pointer">
-                    <div
-                        class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-[11px] font-semibold text-white shrink-0">
-                        AS</div>
-                    <div class="min-w-0">
-                        <div class="text-white text-xs font-medium truncate">Admin Sistem</div>
-                        <div class="text-white/40 text-[10px] truncate">Superadmin</div>
+            @if(auth()->check())
+                <div class="px-4 py-3 border-b border-white/10 text-white">
+                    <div class="text-sm font-semibold">
+                        {{ auth()->user()->name }}
+                    </div>
+                    <div class="text-xs text-slate-300">
+                        {{ auth()->user()->email }}
                     </div>
                 </div>
-            </div>
+            @endif
         </aside>
 
         <div class="flex-1 flex flex-col min-w-0 bg-slate-100">
@@ -172,4 +190,8 @@
     @stack('scripts')
 </body>
 
+</html>
+
+
+</body>
 </html>
