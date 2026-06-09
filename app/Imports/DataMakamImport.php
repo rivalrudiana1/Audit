@@ -42,10 +42,14 @@ class DataMakamImport implements
         |--------------------------------------------------------------------------
         */
         $nama =
-            $row['nama'] ?? null;
-
+        $row['nama']
+        ?? $row['almarhum']
+        ?? null;
+        
         $tanggal =
-            $row['tanggal_pemakaman'] ?? null;
+        $row['tanggal_pemakaman']
+        ?? $row['dimakamkan_tanggal']
+        ?? null;
         /*
         |--------------------------------------------------------------------------
         | SKIP BARIS KOSONG

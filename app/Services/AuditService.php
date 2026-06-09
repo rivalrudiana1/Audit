@@ -36,6 +36,23 @@ class AuditService
             return strtoupper(trim((string)$str));
         };
 
+        $fuzzySimilarity = function ($a, $b) {
+            similar_text(
+                strtoupper(trim($a)),
+                strtoupper(trim($b)),
+                $percent
+            );
+        
+            return round($percent, 2);
+        };
+        
+        $levenshteinDistance = function ($a, $b) {
+            return levenshtein(
+                strtoupper(trim($a)),
+                strtoupper(trim($b))
+            );
+        };
+
         /*
         |--------------------------------------------------------------------------
         | TAHAP 1: HITUNG FREKUENSI (MENDETEKSI DUPLIKAT SEPERTI COUNTIF EXCEL)
@@ -79,7 +96,11 @@ class AuditService
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
+                    'matched_with' => null,
+                    'similarity_score' => null,
+                    'levenshtein_distance' => null,
                     'status'          => 'duplikat_pusat',
+                    'keterangan' => null,
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
@@ -107,7 +128,11 @@ class AuditService
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $c->id,
+                    'matched_with' => null,
+                    'similarity_score' => null,
+                    'levenshtein_distance' => null,
                     'status'          => 'duplikat_cabang',
+                    'keterangan' => null,
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
@@ -145,6 +170,7 @@ class AuditService
         */
         $totalMatch = 0;
         $totalTahunBeda = 0;
+        $totalFuzzyMatch = 0;
         $totalPusatTidakAda = 0;
         $totalCabangTidakAda = 0;
 
@@ -164,7 +190,11 @@ class AuditService
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
+                    'matched_with'    => $cMatch->id,
+                    'similarity_score' => 100,
+                    'levenshtein_distance' => 0,
                     'status'          => 'match_full',
+                    'keterangan' => 'ID Match sama',
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
@@ -195,7 +225,11 @@ class AuditService
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
+                    'matched_with'    => $cMatch->id,
+                    'similarity_score' => 100,
+                    'levenshtein_distance' => 0,
                     'status'          => 'tahun_beda',
+                    'keterangan' => 'Nama sama, tahun berbeda',
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
@@ -204,15 +238,86 @@ class AuditService
             }
             // Cek 3: PUSAT TIDAK ADA DI CABANG
             else {
+                $bestMatch = null;
+                $bestSimilarity = 0;
+                $bestDistance = PHP_INT_MAX;
+            
+                foreach ($cabangUnik as $candidate) {
+                    if (isset($cabangUsedIds[$candidate->id])) {
+                        continue;
+                    }
+                    
+                    $candidateName = $normalize(
+                        $candidate->nama_clean
+                    );
+                    
+                    $similarity = $fuzzySimilarity(
+                        $nama,
+                        $candidateName
+                    );
+
+                    $distance = $levenshteinDistance(
+                        $nama,
+                        $candidateName
+                    );
+                    
+                    if ($similarity > $bestSimilarity) {
+                        $bestSimilarity = $similarity;
+                        $bestDistance = $distance;
+                        $bestMatch = $candidate;
+                    }
+                }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FUZZY MATCH
+        |--------------------------------------------------------------------------
+        */
+        
+        if (
+            $bestSimilarity >= 90
+            && $bestDistance <= 3
+        )   {
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $p->id,
-                    'status'          => 'pusat_tidak_ada',
+                    'matched_with'    => $bestMatch->id,
+                    'similarity_score' => $bestSimilarity,
+                    'levenshtein_distance' => $bestDistance,
+                    'status'          => 'fuzzy_match',
+                    'keterangan' => null,
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
-                $totalPusatTidakAda++;
+        
+                $totalFuzzyMatch++;
+            
+                $cabangUsedIds[$bestMatch->id] = true;
+                
+                continue;
             }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TIDAK DITEMUKAN
+        |--------------------------------------------------------------------------
+        */
+
+        $auditRows[] = [
+            'audit_result_id' => 0,
+            'data_makam_id'   => $p->id,
+            'matched_with'    => null,
+            'similarity_score' => null,
+            'levenshtein_distance' => null,
+            'status'          => 'pusat_tidak_ada',
+            'keterangan' => null,
+            'created_at'      => $now,
+            'updated_at'      => $now,
+        ];
+
+        $totalPusatTidakAda++;
+        
+        }
         }
 
         /*
@@ -226,7 +331,11 @@ class AuditService
                 $auditRows[] = [
                     'audit_result_id' => 0,
                     'data_makam_id'   => $c->id,
+                    'matched_with'    => null,
+                    'similarity_score' => null,
+                    'levenshtein_distance' => null,
                     'status'          => 'cabang_tidak_ada',
+                    'keterangan' => null,
                     'created_at'      => $now,
                     'updated_at'      => $now,
                 ];
@@ -243,6 +352,7 @@ class AuditService
             'tpu_id'                 => $tpuId,
             'total_match'            => $totalMatch,
             'total_tahun_beda'       => $totalTahunBeda,
+            'total_fuzzy_match'      => $totalFuzzyMatch,
             'total_pusat_tidak_ada'  => $totalPusatTidakAda,
             'total_cabang_tidak_ada' => $totalCabangTidakAda,
             'total_duplikat_pusat'   => $totalDuplikatPusat,

@@ -18,6 +18,7 @@ class AuditController extends Controller
         $tahunBeda = collect();
         $pusatTidakAda = collect();
         $cabangTidakAda = collect();
+        $fuzzyMatch = collect();
 
         if ($latestResult) {
 
@@ -29,6 +30,14 @@ class AuditController extends Controller
             $tahunBeda = Audit::with('dataMakam')
                 ->where('audit_result_id', $latestResult->id)
                 ->where('status', 'tahun_beda')
+                ->get();
+
+            $fuzzyMatch = Audit::with([
+                    'dataMakam',
+                    'matchedData'
+                ])
+                ->where('audit_result_id', $latestResult->id)
+                ->where('status', 'fuzzy_match')
                 ->get();
 
             $pusatTidakAda = Audit::with('dataMakam')
@@ -46,6 +55,7 @@ class AuditController extends Controller
             'latestResult',
             'matchFull',
             'tahunBeda',
+            'fuzzyMatch',
             'pusatTidakAda',
             'cabangTidakAda'
         ));

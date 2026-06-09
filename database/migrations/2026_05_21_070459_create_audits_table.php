@@ -49,6 +49,7 @@ return new class extends Migration
             $table->enum('status', [
                 'match_full',
                 'tahun_beda',
+                'fuzzy_match',
                 'pusat_tidak_ada',
                 'cabang_tidak_ada',
                 'duplikat_pusat',

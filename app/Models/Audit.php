@@ -14,6 +14,10 @@ class Audit extends Model
 
         'matched_with',
 
+        'similarity_score',
+
+        'levenshtein_distance',
+
         'status',
 
         'keterangan',

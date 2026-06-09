@@ -13,6 +13,7 @@ class AuditResult extends Model
         // 6 Kategori yang sesuai dengan Excel dan AuditService
         'total_match',
         'total_tahun_beda',
+        'total_fuzzy_match',
         'total_pusat_tidak_ada',
         'total_cabang_tidak_ada',
         'total_duplikat_pusat',

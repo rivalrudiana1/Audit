@@ -104,6 +104,23 @@
                     <div class="text-[11px] text-slate-500 font-medium">Nama sama, tahun berbeda</div>
                 </div>
 
+                {{-- Card: Fuzzy Match --}}
+                <div class="flex flex-col gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50/50">
+                    <div class="flex items-center gap-2 text-purple-700">
+                        <span class="text-xs font-bold uppercase tracking-wider">
+                            Fuzzy Match
+                        </span>
+                    </div>
+                    
+                    <div class="text-3xl font-extrabold text-slate-800">
+                        {{ number_format($displayData->total_fuzzy_match ?? 0, 0, ',', '.') }}
+                    </div>
+                    
+                    <div class="text-[11px] text-slate-500 font-medium">
+                        Nama mirip berdasarkan similarity
+                    </div>
+                </div>
+
                 {{-- Card: Pusat Tidak Ada di Pandu --}}
                 <div class="flex flex-col gap-2 p-4 rounded-xl border border-red-100 bg-red-50/50">
                     <div class="flex items-center gap-2 text-red-700">
@@ -364,6 +381,57 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl border border-purple-200 overflow-hidden bg-white">
+                        <div class="flex items-center justify-between px-4 py-3 bg-purple-50 border-b border-purple-200">
+                            <div class="flex items-center gap-2 text-purple-700 font-semibold">
+                                <i class="fas fa-search"></i>
+                                <span>Fuzzy Match</span>
+                            </div>
+                            <span class="px-3 py-1 text-xs font-bold rounded-full bg-white border border-purple-300 text-purple-700">
+                                {{ number_format($fuzzyMatch->count(), 0, ',', '.') }}
+                            </span>
+                        </div>
+                        
+                        <div class="max-h-80 overflow-y-auto">
+                            @forelse($fuzzyMatch as $item)
+                                <div class="px-4 py-3 border-b border-slate-100">
+                                    <div class="font-medium text-slate-800">
+                                        {{ $item->dataMakam->nama }}
+                                    </div>
+                                    @if($item->matchedData)
+                                        <div class="text-sm text-purple-600">
+                                            Mirip dengan:{{ $item->matchedData->nama }}
+                                        </div>
+                                    @endif
+
+                                        <div class="text-xs text-slate-500 mt-1">
+                                            Similarity:
+                                            @if($item->similarity_score >= 95)
+                                                <span class="text-green-600 font-semibold">
+                                                    {{ $item->similarity_score }}%
+                                                </span>
+                                            @elseif($item->similarity_score >= 90)
+                                                <span class="text-yellow-600 font-semibold">
+                                                    {{ $item->similarity_score }}%
+                                                </span>
+                                            @else
+                                                <span class="text-red-600 font-semibold">
+                                                    {{ $item->similarity_score }}%
+                                                </span>
+                                            @endif
+                                            |
+                                            Distance:
+                                            {{ $item->levenshtein_distance ?? '-' }}
+                                        </div>
+                                    </div>
+                                    @empty
+                                    <div class="p-4 text-slate-500">
+                                        Tidak ada data fuzzy match
+                                    </div>
+                            @endforelse
                         </div>
                     </div>
 
