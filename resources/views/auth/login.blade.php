@@ -1,47 +1,108 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="id">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <title>Login - AuditSys</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md">
+
+        <div class="text-center mb-8">
+
+            <div
+                class="w-16 h-16 bg-[#1A3A5C] rounded-xl flex items-center justify-center mx-auto mb-4">
+
+                <svg width="30" height="30" viewBox="0 0 24 24"
+                    fill="none" stroke="white"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+
+                </svg>
+            </div>
+
+            <h1 class="text-3xl font-bold text-[#1A3A5C]">
+                AuditSys
+            </h1>
+
+            <p class="text-slate-500 mt-2">
+                Sistem Audit Sinkronisasi Data Makam
+            </p>
+
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <div class="bg-white rounded-2xl shadow-lg p-8">
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-medium">
+                        Email
+                    </label>
+
+                    <input type="email"
+                        name="email"
+                        required
+                        autofocus
+                        class="w-full border rounded-lg px-4 py-3">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block mb-2 text-sm font-medium">
+                        Password
+                    </label>
+
+                    <input type="password"
+                        name="password"
+                        required
+                        class="w-full border rounded-lg px-4 py-3">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-[#1A3A5C] text-white py-3 rounded-lg font-semibold hover:opacity-90">
+
+                    Login
+
+                </button>
+
+                <div class="text-center mt-5 text-sm">
+
+                    Belum punya akun?
+
+                    <a href="{{ route('register') }}"
+                        class="text-blue-600 font-semibold">
+
+                        Register
+
+                    </a>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+</body>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>
