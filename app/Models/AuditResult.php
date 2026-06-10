@@ -28,7 +28,9 @@ class AuditResult extends Model
 
     public function tpu()
     {
-        return $this->belongsTo(Tpu::class);
+        return $this->belongsTo(
+            \App\Models\Tpu::class
+        );
     }
 
     public function import()

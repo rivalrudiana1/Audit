@@ -8,15 +8,27 @@ use App\Models\AuditResult;
 
 class AuditService
 {
-    public function generate($tpuId)
+    public function generate(int $tpuId)
     {
         /*
         |--------------------------------------------------------------------------
         | RESET AUDIT
         |--------------------------------------------------------------------------
         */
-        Audit::query()->delete();
-        AuditResult::query()->delete();
+        $oldResults = AuditResult::where(
+            'tpu_id',
+            $tpuId
+        )->pluck('id');
+
+        Audit::whereIn(
+            'audit_result_id',
+            $oldResults
+        )->delete();
+
+        AuditResult::where(
+            'tpu_id',
+            $tpuId
+        )->delete();
 
         /*
         |--------------------------------------------------------------------------

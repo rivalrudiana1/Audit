@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'kepala_uptd' => \App\Http\Middleware\KepalaUptdMiddleware::class,
+            'kepala_tpu' => \App\Http\Middleware\KepalaTpuMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

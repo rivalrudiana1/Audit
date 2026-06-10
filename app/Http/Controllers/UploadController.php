@@ -6,17 +6,35 @@ use App\Imports\DataMakamImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Import;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Tpu;
 
 class UploadController extends Controller
 {
     public function index()
     {
-        return view('upload.index');
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            $tpus = Tpu::all();
+        } else {
+            $user = Auth::user();
+            $tpus = Tpu::where('id', $user->tpu_id)->get();
+        }
+
+return view(
+    'upload.index',
+    compact('tpus')
+);
     }
 
     public function store(Request $request)
     {
-        $tpuId = $request->tpu_id;
+        $user = Auth::user();
+
+        if ($user && $user->role === 'admin') {
+            $tpuId = $request->tpu_id;
+        } else {
+            $tpuId = $user->tpu_id;
+        }
 
         /*
     |--------------------------------------------------------------------------

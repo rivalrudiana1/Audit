@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Services\AuditService;
 use App\Models\AuditResult;
 use App\Models\DataMakam;
@@ -12,7 +13,18 @@ class AuditController extends Controller
 {
     public function index()
     {
-        $latestResult = AuditResult::latest()->first();
+        $user = Auth::user();
+
+        if ($user?->role === 'kepala_tpu') {
+            $latestResult = AuditResult::where(
+                'tpu_id',
+                $user->tpu_id
+            )
+                ->latest()
+                ->first();
+        } else {
+            $latestResult = AuditResult::latest()->first();
+        }
 
         $matchFull = collect();
         $tahunBeda = collect();
@@ -63,7 +75,13 @@ class AuditController extends Controller
 
     public function generate(Request $request, AuditService $auditService)
     {
-        $tpuId = $request->input('tpu_id', 1); // 1 = Misalnya default untuk TPU Pandu
+        $user = Auth::user();
+        // Determine TPU id: admin can provide tpu_id, others use their assigned tpu_id
+        if ($user && $user->role === 'admin') {
+            $tpuId = $request->input('tpu_id');
+        } else {
+            $tpuId = $user?->tpu_id;
+        }
 
         // 1. CEK MASTER TPU: Pastikan TPU ada di database
         // (Abaikan jika kamu tidak membuat model Tpu, tapi disarankan ada)
