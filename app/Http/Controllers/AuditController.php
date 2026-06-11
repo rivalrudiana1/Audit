@@ -16,6 +16,7 @@ class AuditController extends Controller
         $user = Auth::user();
 
         if ($user?->role === 'kepala_tpu') {
+
             $latestResult = AuditResult::where(
                 'tpu_id',
                 $user->tpu_id
@@ -23,6 +24,7 @@ class AuditController extends Controller
                 ->latest()
                 ->first();
         } else {
+
             $latestResult = AuditResult::latest()->first();
         }
 
@@ -31,6 +33,10 @@ class AuditController extends Controller
         $pusatTidakAda = collect();
         $cabangTidakAda = collect();
         $fuzzyMatch = collect();
+
+        $totalPusat = 0;
+        $totalCabang = 0;
+        $persentaseSinkronisasi = 0;
 
         if ($latestResult) {
 
@@ -45,9 +51,9 @@ class AuditController extends Controller
                 ->get();
 
             $fuzzyMatch = Audit::with([
-                    'dataMakam',
-                    'matchedData'
-                ])
+                'dataMakam',
+                'matchedData'
+            ])
                 ->where('audit_result_id', $latestResult->id)
                 ->where('status', 'fuzzy_match')
                 ->get();
@@ -61,6 +67,32 @@ class AuditController extends Controller
                 ->where('audit_result_id', $latestResult->id)
                 ->where('status', 'cabang_tidak_ada')
                 ->get();
+
+            $totalPusat = DataMakam::where(
+                'tpu_id',
+                $latestResult->tpu_id
+            )
+                ->where(
+                    'sumber',
+                    'pusat'
+                )
+                ->count();
+
+            $totalCabang = DataMakam::where(
+                'tpu_id',
+                $latestResult->tpu_id
+            )
+                ->where(
+                    'sumber',
+                    'cabang'
+                )
+                ->count();
+
+            if ($totalPusat > 0) {
+
+                $persentaseSinkronisasi =
+                    ($matchFull->count() / $totalPusat) * 100;
+            }
         }
 
         return view('audit.index', compact(
@@ -69,7 +101,11 @@ class AuditController extends Controller
             'tahunBeda',
             'fuzzyMatch',
             'pusatTidakAda',
-            'cabangTidakAda'
+            'cabangTidakAda',
+
+            'totalPusat',
+            'totalCabang',
+            'persentaseSinkronisasi'
         ));
     }
 

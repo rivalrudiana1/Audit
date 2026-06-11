@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Tpu;
 use App\Models\DataMakam;
 use App\Models\AuditResult;
+use App\Models\Import;
 
 class DashboardController extends Controller
 {
@@ -21,20 +22,30 @@ class DashboardController extends Controller
 
         if ($role == 'admin') {
 
+            $totalPusat = DataMakam::where(
+                'sumber',
+                'pusat'
+            )->count();
+
+            $totalCabang = DataMakam::where(
+                'sumber',
+                'cabang'
+            )->count();
+
+            $auditTerakhir = AuditResult::latest()
+                ->first();
+
             return view(
                 'dashboard.admin',
                 [
-                    'totalUser' =>
-                        User::count(),
+                    'totalUser' => User::count(),
+                    'totalTpu' => Tpu::count(),
+                    'totalMakam' => DataMakam::count(),
+                    'totalAudit' => AuditResult::count(),
 
-                    'totalTpu' =>
-                        Tpu::count(),
-
-                    'totalMakam' =>
-                        DataMakam::count(),
-
-                    'totalAudit' =>
-                        AuditResult::count(),
+                    'totalPusat' => $totalPusat,
+                    'totalCabang' => $totalCabang,
+                    'auditTerakhir' => $auditTerakhir,
                 ]
             );
         }
@@ -45,8 +56,7 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ($role == 'kepala_tpu')
-        {
+        if ($role == 'kepala_tpu') {
             $tpuId = auth()->guard()->user()->tpu_id;
 
             $totalMakam = DataMakam::where(
@@ -72,12 +82,12 @@ class DashboardController extends Controller
             $tpus = Tpu::withCount([
                 'dataMakam'
             ])
-            ->with([
-                'auditResults' => function ($query) {
-                    $query->latest();
-                }
-            ])
-            ->get();
+                ->with([
+                    'auditResults' => function ($query) {
+                        $query->latest();
+                    }
+                ])
+                ->get();
 
             return view('dashboard.kepala_uptd', compact('tpus'));
         }

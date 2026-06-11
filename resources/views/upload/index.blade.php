@@ -79,9 +79,13 @@
                     </label>
                     <select name="tpu_id"
                         class="custom-select w-full h-10 border border-slate-200 rounded-lg px-3 text-sm text-slate-800 bg-slate-50 focus:outline-none focus:border-[#1A3A5C] focus:ring-1 focus:ring-[#1A3A5C] transition">
+
                         <option value="">— Pilih TPU —</option>
-                        <option value="1">PANDU</option>
-                        <option value="2">SATRIA</option>
+
+                        @foreach ($tpus as $tpu)
+                            <option value="{{ $tpu->id }}">{{ $tpu->nama }}</option>
+                        @endforeach
+
                     </select>
                 </div>
 

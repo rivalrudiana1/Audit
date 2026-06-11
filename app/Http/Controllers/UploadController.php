@@ -20,14 +20,15 @@ class UploadController extends Controller
             $tpus = Tpu::where('id', $user->tpu_id)->get();
         }
 
-return view(
-    'upload.index',
-    compact('tpus')
-);
+        return view(
+            'upload.index',
+            compact('tpus')
+        );
     }
 
     public function store(Request $request)
     {
+
         $user = Auth::user();
 
         if ($user && $user->role === 'admin') {
