@@ -66,4 +66,15 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::middleware([
+    'auth',
+    'kepala_uptd'
+])->group(function () {
+
+    Route::get(
+        '/monitoring',
+        [DashboardController::class, 'monitoring']
+    )->name('monitoring');
+});
+
 require __DIR__.'/auth.php';

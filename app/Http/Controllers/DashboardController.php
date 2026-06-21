@@ -79,9 +79,8 @@ class DashboardController extends Controller
         */
 
         if ($role == 'kepala_uptd') {
-            $tpus = Tpu::withCount([
-                'dataMakam'
-            ])
+
+            $tpus = Tpu::withCount('dataMakam')
                 ->with([
                     'auditResults' => function ($query) {
                         $query->latest();
@@ -89,7 +88,10 @@ class DashboardController extends Controller
                 ])
                 ->get();
 
-            return view('dashboard.kepala_uptd', compact('tpus'));
+            return view(
+                'dashboard.kepala_uptd',
+                compact('tpus')
+            );
         }
     }
 }
