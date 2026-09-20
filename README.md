@@ -1,58 +1,62 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Audit TPU (Tempat Pemakaman Umum)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Tajuk Projek & Ringkasan
+**Sistem Audit TPU**
+Aplikasi web ini dibangunkan untuk mengurus dan memantau audit Tempat Pemakaman Umum (TPU). Ia memudahkan proses penjanaan laporan audit, membolehkan pengurusan profil dan tahap pengguna (Admin/Kepala TPU), serta menyediakan platform berpusat untuk muat naik dokumen dan penjejakan maklumat TPU.
 
-## About Laravel
+## 2. Teknologi yang Digunakan (Tech Stack)
+- **Frontend**: Laravel Blade, Tailwind CSS, Alpine.js, Vite
+- **Backend**: PHP 8.3+, Laravel (v11/v13-dev), Maatwebsite Excel (untuk eksport Excel)
+- **Pangkalan Data**: SQLite (default) / MySQL / PostgreSQL (boleh dikonfigurasi melalui `.env`)
+- **Perkakas/Infrastruktur**: Composer, NPM, Git
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 3. Ciri-Ciri Utama & Logik Perniagaan
+- **Autentikasi Pengguna**: Log masuk selamat dengan perlindungan laluan berasaskan middleware (`auth`).
+- **Papan Pemuka (Dashboard)**: Antaramuka utama yang memaparkan ringkasan data audit.
+- **Pengurusan Audit**: Fungsi untuk menjana (`/audit/generate`) dan menyemak data audit.
+- **Pengurusan Fail/Muat Naik**: Modul khusus untuk memuat naik dokumen (`/upload`).
+- **Kawalan Akses Berasaskan Peranan (RBAC)**: Pemisahan fungsi antara `Admin` (mengurus pengguna dan data TPU penuh) dan `Kepala TPU`.
+- **Pengurusan Data Teras (CRUD)**: Pengurusan pengguna (`/users`) dan maklumat TPU (`/tpus`).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 4. Struktur Direktori Projek
+- `app/`: Mengandungi logik utama aplikasi seperti Model, Controller (Cth: `AuditController`, `TpuController`), dan Middleware.
+- `routes/`: Menyimpan definisi laluan API dan Web (`web.php`).
+- `resources/`: Menyimpan fail paparan antaramuka (Blade template) serta aset belum diproses (CSS/JS).
+- `database/`: Fail migrasi pangkalan data, seeder, dan factory.
+- `public/`: Aset awam yang telah siap diproses (CSS, JS, Imej) dan fail `index.php` (titik mula aplikasi).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 5. Panduan Pemasangan & Cara Menjalankan Projek
+Berikut adalah langkah-langkah untuk menjalankan projek ini di komputer tempatan:
 
-## Learning Laravel
+1. **Pasang Dependensi Backend & Frontend**:
+   ```bash
+   composer install
+   npm install
+   ```
+2. **Tetapan Persekitaran (Environment)**:
+   Salin fail contoh persekitaran dan sesuaikan tetapan pangkalan data:
+   ```bash
+   cp .env.example .env
+   ```
+3. **Jana Kunci Aplikasi & Pangkalan Data**:
+   ```bash
+   php artisan key:generate
+   php artisan migrate
+   ```
+4. **Jalankan Pelayan Pembangunan**:
+   Jalankan arahan berikut (sebaiknya dalam terminal berasingan) untuk memulakan persekitaran pembangunan:
+   ```bash
+   npm run dev
+   php artisan serve
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 6. Endpoint API / Skema Pangkalan Data
+Laluan utama (Routes) yang tersedia dalam sistem:
+- **Umum (Log masuk diperlukan)**:
+  - `GET /dashboard` : Papan pemuka pengguna
+  - `GET /audit`, `POST /audit/generate` : Pengurusan audit
+  - `GET /profile`, `PATCH /profile`, `DELETE /profile` : Pengurusan profil pengguna
+  - `GET /upload`, `POST /upload` : Pengurusan muat naik (Akses: Admin & Kepala TPU)
+- **Admin Sahaja**:
+  - `Resource /users` : CRUD Pengguna
+  - `Resource /tpus` : CRUD TPU
