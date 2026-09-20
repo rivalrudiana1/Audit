@@ -1,62 +1,62 @@
 # Sistem Audit TPU (Tempat Pemakaman Umum)
 
-## 1. Tajuk Projek & Ringkasan
+## 1. Judul Proyek & Ringkasan
 **Sistem Audit TPU**
-Aplikasi web ini dibangunkan untuk mengurus dan memantau audit Tempat Pemakaman Umum (TPU). Ia memudahkan proses penjanaan laporan audit, membolehkan pengurusan profil dan tahap pengguna (Admin/Kepala TPU), serta menyediakan platform berpusat untuk muat naik dokumen dan penjejakan maklumat TPU.
+Aplikasi web ini dibangun untuk mengelola dan memantau audit Tempat Pemakaman Umum (TPU). Sistem ini mempermudah proses pembuatan laporan audit, memungkinkan manajemen profil dan peran pengguna (Admin/Kepala TPU), serta menyediakan platform terpusat untuk unggah dokumen dan pelacakan informasi TPU.
 
 ## 2. Teknologi yang Digunakan (Tech Stack)
 - **Frontend**: Laravel Blade, Tailwind CSS, Alpine.js, Vite
-- **Backend**: PHP 8.3+, Laravel (v11/v13-dev), Maatwebsite Excel (untuk eksport Excel)
-- **Pangkalan Data**: SQLite (default) / MySQL / PostgreSQL (boleh dikonfigurasi melalui `.env`)
+- **Backend**: PHP 8.3+, Laravel (v11/v13-dev), Maatwebsite Excel (untuk *export* Excel)
+- **Database**: SQLite (*default*) / MySQL / PostgreSQL (dapat dikonfigurasi melalui `.env`)
 - **Perkakas/Infrastruktur**: Composer, NPM, Git
 
-## 3. Ciri-Ciri Utama & Logik Perniagaan
-- **Autentikasi Pengguna**: Log masuk selamat dengan perlindungan laluan berasaskan middleware (`auth`).
-- **Papan Pemuka (Dashboard)**: Antaramuka utama yang memaparkan ringkasan data audit.
-- **Pengurusan Audit**: Fungsi untuk menjana (`/audit/generate`) dan menyemak data audit.
-- **Pengurusan Fail/Muat Naik**: Modul khusus untuk memuat naik dokumen (`/upload`).
-- **Kawalan Akses Berasaskan Peranan (RBAC)**: Pemisahan fungsi antara `Admin` (mengurus pengguna dan data TPU penuh) dan `Kepala TPU`.
-- **Pengurusan Data Teras (CRUD)**: Pengurusan pengguna (`/users`) dan maklumat TPU (`/tpus`).
+## 3. Fitur Utama & Logika Bisnis
+- **Authentication Pengguna**: Login aman dengan proteksi *routes* berbasis middleware (`auth`).
+- **Dashboard**: Antarmuka utama yang menampilkan ringkasan data audit.
+- **Manajemen Audit**: Fungsi untuk membuat (*generate*) di `/audit/generate` dan meninjau data audit.
+- **Manajemen File/Unggah**: Modul khusus untuk mengunggah dokumen (`/upload`).
+- **Kontrol Akses Berbasis Peran (RBAC)**: Pemisahan fungsi antara `Admin` (mengelola pengguna dan data TPU penuh) dan `Kepala TPU`.
+- **Manajemen Data Inti (CRUD)**: Pengelolaan pengguna (`/users`) dan informasi TPU (`/tpus`).
 
-## 4. Struktur Direktori Projek
-- `app/`: Mengandungi logik utama aplikasi seperti Model, Controller (Cth: `AuditController`, `TpuController`), dan Middleware.
-- `routes/`: Menyimpan definisi laluan API dan Web (`web.php`).
-- `resources/`: Menyimpan fail paparan antaramuka (Blade template) serta aset belum diproses (CSS/JS).
-- `database/`: Fail migrasi pangkalan data, seeder, dan factory.
-- `public/`: Aset awam yang telah siap diproses (CSS, JS, Imej) dan fail `index.php` (titik mula aplikasi).
+## 4. Struktur Direktori Proyek
+- `app/`: Berisi logika utama aplikasi seperti Model, Controller (Contoh: `AuditController`, `TpuController`), dan Middleware.
+- `routes/`: Menyimpan definisi *routes* API dan Web (`web.php`).
+- `resources/`: Menyimpan file tampilan antarmuka (Blade template) serta aset mentah (CSS/JS).
+- `database/`: File migration database, seeder, dan factory.
+- `public/`: Aset publik yang telah melalui proses *build* (CSS, JS, Gambar) dan file `index.php` (titik masuk aplikasi).
 
-## 5. Panduan Pemasangan & Cara Menjalankan Projek
-Berikut adalah langkah-langkah untuk menjalankan projek ini di komputer tempatan:
+## 5. Panduan Instalasi & Cara Menjalankan Proyek
+Berikut adalah langkah-langkah untuk melakukan *deploy* atau menjalankan proyek ini di komputer lokal:
 
-1. **Pasang Dependensi Backend & Frontend**:
+1. **Instal *Dependencies* Backend & Frontend**:
    ```bash
    composer install
    npm install
    ```
-2. **Tetapan Persekitaran (Environment)**:
-   Salin fail contoh persekitaran dan sesuaikan tetapan pangkalan data:
+2. **Konfigurasi Environment**:
+   Salin file contoh *environment* dan sesuaikan pengaturan database:
    ```bash
    cp .env.example .env
    ```
-3. **Jana Kunci Aplikasi & Pangkalan Data**:
+3. **Generate Kunci Aplikasi & Database**:
    ```bash
    php artisan key:generate
    php artisan migrate
    ```
-4. **Jalankan Pelayan Pembangunan**:
-   Jalankan arahan berikut (sebaiknya dalam terminal berasingan) untuk memulakan persekitaran pembangunan:
+4. **Jalankan Server Development**:
+   Jalankan perintah berikut (sebaiknya di terminal terpisah) untuk memulai lingkungan *development*:
    ```bash
    npm run dev
    php artisan serve
    ```
 
-## 6. Endpoint API / Skema Pangkalan Data
-Laluan utama (Routes) yang tersedia dalam sistem:
-- **Umum (Log masuk diperlukan)**:
-  - `GET /dashboard` : Papan pemuka pengguna
-  - `GET /audit`, `POST /audit/generate` : Pengurusan audit
-  - `GET /profile`, `PATCH /profile`, `DELETE /profile` : Pengurusan profil pengguna
-  - `GET /upload`, `POST /upload` : Pengurusan muat naik (Akses: Admin & Kepala TPU)
-- **Admin Sahaja**:
+## 6. Endpoint API / Skema Database
+Daftar *routes* utama yang tersedia dalam sistem:
+- **Umum (Membutuhkan Login)**:
+  - `GET /dashboard` : Dashboard pengguna
+  - `GET /audit`, `POST /audit/generate` : Manajemen audit
+  - `GET /profile`, `PATCH /profile`, `DELETE /profile` : Manajemen profil pengguna
+  - `GET /upload`, `POST /upload` : Manajemen unggahan (Akses: Admin & Kepala TPU)
+- **Khusus Admin**:
   - `Resource /users` : CRUD Pengguna
   - `Resource /tpus` : CRUD TPU
